@@ -15,8 +15,22 @@ const message = document.querySelector(".message");
 //play again button
 const playAgainButton = document.querySelector(".play-again");
 
-const word = "magnolia";
+//global variables
+let word = "magnolia";
 let guessedLetters = [];
+let remainingGuesses = 8;
+
+const getWord = async function() {
+    const res = await fetch('https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt');
+    const data = await res.text();
+    const wordArray = data.split("\n");
+    const randomIdx = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIdx].trim();
+    updateText(word);
+};
+
+getWord();
+
 
 //hide word
 const updateText = function(word) {
@@ -26,7 +40,6 @@ const updateText = function(word) {
     };
     wordInProgress.innerText = hiddenWord.join('');
 };
-updateText(word);
 
 //submit user guess -- GUESS BUTTON
 guessBtn.addEventListener("click", function(e) {
@@ -66,6 +79,7 @@ const makeGuess = function(letter) {
     } else {
         guessedLetters.push(guess);
         updateLettersList();
+        countGuessesRemaining(guess);
         updateWord(guessedLetters);
     }
     console.log(guessedLetters);
@@ -98,6 +112,26 @@ const updateWord = function(guessedLettersArray) {
     checkWin();
 };
 
+//guesses remaining
+const countGuessesRemaining = function(input) {
+    const wordUpper = word.toUpperCase();
+
+    if (!wordUpper.includes(input)) {
+        message.innerText = "Nope! That letter isn't in the word";
+        remainingGuesses--;
+    } else {
+        message.innerText = "Correct! That letter is in the word";
+    };
+
+    if(remainingGuesses === 0) {
+        remaining.innerText = `GAME OVER! You ran out of guesses. The word was ${word.toUpperCase()}`;
+    } else if (remainingGuesses === 1) {
+        remaining.innerText = "Careful! You only have 1 guess left!"
+    } else {
+        remainingSpan.innerText = `${remainingGuesses} guesses`;
+    }
+};
+
 
 //check if player won
 const checkWin = function() {
@@ -106,3 +140,4 @@ const checkWin = function() {
         message.innerHTML = "<p class='highlight'>You guessed correct the word! Congrats!</p>";
     }
 };
+
