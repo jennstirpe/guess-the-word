@@ -13,7 +13,7 @@ const remainingSpan = document.querySelector(".remaining span");
 //message when player guesses a letter
 const message = document.querySelector(".message");
 //play again button
-const playAgainButton = document.querySelector(".play-again");
+const playAgainBtn = document.querySelector(".play-again");
 
 //global variables
 let word = "magnolia";
@@ -82,7 +82,6 @@ const makeGuess = function(letter) {
         countGuessesRemaining(guess);
         updateWord(guessedLetters);
     }
-    console.log(guessedLetters);
 };
 
 //display guessed letters
@@ -124,9 +123,10 @@ const countGuessesRemaining = function(input) {
     };
 
     if(remainingGuesses === 0) {
-        remaining.innerText = `GAME OVER! You ran out of guesses. The word was ${word.toUpperCase()}`;
+        message.innerText = `GAME OVER! You ran out of guesses. The word was ${word.toUpperCase()}`;
+        startOver();
     } else if (remainingGuesses === 1) {
-        remaining.innerText = "Careful! You only have 1 guess left!"
+        message.innerText = "Careful, you only have 1 guess left!"
     } else {
         remainingSpan.innerText = `${remainingGuesses} guesses`;
     }
@@ -138,6 +138,41 @@ const checkWin = function() {
     if(word.toUpperCase() === wordInProgress.innerText) {
         message.classList.add("win");
         message.innerHTML = "<p class='highlight'>You guessed correct the word! Congrats!</p>";
+        startOver();
     }
 };
 
+
+//hide&show elements
+const startOver = function() {
+    // if(word.toUpperCase() === wordInProgress.innerText || remainingGuesses === 0) {
+        //hide
+        guessBtn.classList.add("hide");
+        remaining.classList.add("hide");
+        guessedLettersList.classList.add("hide");
+        //display
+        playAgainBtn.classList.remove("hide");
+    // }
+};
+
+//PLAY AGAIN BUTTON
+playAgainBtn.addEventListener("click", function() {
+    //reset game
+    message.classList.remove("win");
+    guessedLetters = [];
+    remainingGuesses = 8;
+    remainingSpan.innerText = `${remainingGuesses} guesses`;
+    guessedLettersList.innerHTML = "";
+    message.innerText = "";
+    
+    //display
+    guessBtn.classList.remove("hide");
+    remaining.classList.remove("hide");
+    guessedLettersList.classList.remove("hide");
+    //hide
+    playAgainBtn.classList.add("hide");
+    
+    getWord();
+
+    console.log(guessedLetters);
+});
